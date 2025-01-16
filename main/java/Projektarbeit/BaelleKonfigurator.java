@@ -1,12 +1,13 @@
 package Projektarbeit;
 
+//Importe der swing-Oberfläche, sowie des ActionListeners und der Arrayliste
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
 public class BaelleKonfigurator extends JFrame {
-    // GUI-Komponenten
+    // alle GUI-Komponenten
     private JTextField textFieldPreis;
     private JLabel labelPreis;
     private JLabel labelBallart;
@@ -26,8 +27,6 @@ public class BaelleKonfigurator extends JFrame {
     private JTextArea textAreaWarenkorb;
     private JTextField textFieldGesamtpreis;
     private JLabel labelGesamtpreis;
-
-    // Neue Komponenten für RadioButtons
     private JRadioButton RadioButtonBlau;
     private JRadioButton RadioButtonRot;
     private JRadioButton RadioButtonGruen;
@@ -37,11 +36,13 @@ public class BaelleKonfigurator extends JFrame {
     private JButton filterZurücksetzenButton;
     private ButtonGroup colorButtonGroup;
 
+    /*anlegen von 2 ArrayListen - eine ArrayListe des Warenkorbs, sowie eine ArrayLise
+    die nur die gefilterten Bälle anzeigen soll */
     private ArrayList<Ball> warenkorb = new ArrayList<>();
-    private ArrayList<Ball> gefilterteBaelle = new ArrayList<>(); // Gefilterte Bälle
+    private ArrayList<Ball> gefilterteBaelle = new ArrayList<>();
 
 
-
+//Konfiguration der Benutzeroberfläche
     public BaelleKonfigurator() {
         setTitle("BaelleKonfigurator");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -49,68 +50,8 @@ public class BaelleKonfigurator extends JFrame {
         setContentPane(myPanelBall);
         setVisible(true);
 
+        //Aufruf der initObjekte-Methode, welche 3 Objekte erzeugt und diese dem Warenkorb hinzufügt
         initObjekte();
-
-
-
-
-
-        // ActionListener für die RadioButtons
-        ActionListener radioButtonListener = new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                // Prüfe, welcher RadioButton ausgewählt wurde
-                String ausgewählteFarbe = "";
-                if (RadioButtonBlau.isSelected()) {
-                    ausgewählteFarbe = "blau";
-                } else if (RadioButtonRot.isSelected()) {
-                    ausgewählteFarbe = "rot";
-                } else if (RadioButtonGruen.isSelected()) {
-                    ausgewählteFarbe = "grün";
-                } else if (RadioButtonGelb.isSelected()) {
-                    ausgewählteFarbe = "gelb";
-                } else if (RadioButtonLila.isSelected()) {
-                    ausgewählteFarbe = "lila";
-                } else if (RadioButtonMagenta.isSelected()) {
-                    ausgewählteFarbe = "magenta";
-                }
-
-                // Filtere den Warenkorb nach der ausgewählten Farbe
-                filtereNachFarbe(ausgewählteFarbe);
-            }
-        };
-
-        //Listener zu den RadioButtons hinzufügen
-        RadioButtonBlau.addActionListener(radioButtonListener);
-        RadioButtonRot.addActionListener(radioButtonListener);
-        RadioButtonGruen.addActionListener(radioButtonListener);
-        RadioButtonGelb.addActionListener(radioButtonListener);
-        RadioButtonLila.addActionListener(radioButtonListener);
-        RadioButtonMagenta.addActionListener(radioButtonListener);
-
-        filterZurücksetzenButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                // Leere die Textarea
-                textAreaWarenkorb.setText("");
-
-                // Zeige alle Bälle aus dem ursprünglichen Warenkorb
-                for (Ball ball : warenkorb) {
-                    textAreaWarenkorb.append(ball.toString() + "\n");
-                }
-
-                // Leere die gefilterte Liste, damit alle Bälle wieder angezeigt werden
-                gefilterteBaelle.clear();
-
-                // Setze die RadioButtons zurück
-                colorButtonGroup.clearSelection();
-
-                // Erfolgsmeldung anzeigen (optional)
-                JOptionPane.showMessageDialog(null, "Filter zurückgesetzt. Der vollständige Warenkorb wird wieder angezeigt.",
-                        "Filter zurückgesetzt", JOptionPane.INFORMATION_MESSAGE);
-            }
-        });
-
 
 
         // Berechnen-Button
@@ -151,7 +92,21 @@ public class BaelleKonfigurator extends JFrame {
 
                     // Gesamtpreis berechnen
                     preis *= anzahl;
-                    textFieldPreis.setText("Ihre Auswahl: " + ballart + " kostet " + String.format("%.2f", preis) + " EUR");
+                    textFieldPreis.setText("Ihre Auswahl: " + ballart + " kostet " + /*String.format("%.2f", preis)*/ preis + " EUR");
+
+/* die String.format("%.2f") Methode:
+- .format gibt das Ergebnis als String zurück, anstatt es direkt (als double) auszugeben
+- % markiert den Beginn einer Formatierugsanweisung
+- f steht für eine Fließkommazahl (float)
+- .2 gibt an, dass genau 2 Nachkommastellen angezeigt werden sollen
+-> Der Preis wird also als String, z.B "30.00" mit genau 2 Nachkommastellen angegeben
+-> Eine Darstellung des textFieldPreis wäre auch mit ... + preis + "EUR" möglich gewesen,
+allerdings werden Preise immer mit 2 Nachkommastellen angegeben, die String.format("%.2f", preis)-Methode
+würde komplexere Preise immer genau runden und es wird mit dieser Methode einzig ein String,
+und keine Mischung aus String & double ausgegeben, weshalb wir uns für diese Methode entschieden haben.
+*/
+
+                 //catch-Block mit pop-up-message(sog. showMessageDialog), sollte keine Zahl eingegeben werden.
 
                 } catch (NumberFormatException ex) {
                     JOptionPane.showMessageDialog(null, "Bitte eine gültige Zahl eingeben!", "Fehler", JOptionPane.ERROR_MESSAGE);
@@ -199,12 +154,20 @@ public class BaelleKonfigurator extends JFrame {
                     // Gesamtpreis berechnen
                     double gesamtPreis = basisPreis * anzahl;
 
-                    // Neuen Ball erstellen
+                    // Neuen Ball erstellen und in ArrayListe Warenkorb speichern
                     Ball neuerBall = new Ball(size, farbe, ballart, anzahl, gesamtPreis);
                     warenkorb.add(neuerBall);
 
                     // Ball im Textbereich (textAreaWarenkorb) anzeigen
-                    textAreaWarenkorb.append(neuerBall.toString() + "\n");
+                    /*
+                    .append(neuerBall) lässt den neu erstellten Ball im Warenkorb mit all seinen
+                    Eigenschaften(size,farbe,etc) in einer Zeile anzeigen, sodass das neu erstellte
+                    Objekt mit all seinen Attributen übersichtlich  dargestellt wird,
+                    + "\n" bewirkt, dass ein weiteres Objekt in einer Zeile darunter angezeigt wird.
+                    es bewirkt also einen Zeilenumbruch.
+                     */
+
+                    textAreaWarenkorb.append(neuerBall + "\n");
 
                     // Erfolgsnachricht anzeigen
                     JOptionPane.showMessageDialog(null, "Ball erfolgreich gespeichert!", "Speichern", JOptionPane.INFORMATION_MESSAGE);
@@ -239,6 +202,62 @@ public class BaelleKonfigurator extends JFrame {
                 textFieldGesamtpreis.setText("Gesamtpreis: " + String.format("%.2f", gesamtPreis) + " EUR");
             }
         });
+
+        // ActionListener für die RadioButtons
+        ActionListener radioButtonListener = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Prüfe, welcher RadioButton ausgewählt wurde
+                String ausgewählteFarbe = ""; /* ausgewählte Farbe = "leerer" String
+                vergleichbar mit preis = 0; */
+                if (RadioButtonBlau.isSelected()) {
+                    ausgewählteFarbe = "blau";
+                } else if (RadioButtonRot.isSelected()) {
+                    ausgewählteFarbe = "rot";
+                } else if (RadioButtonGruen.isSelected()) {
+                    ausgewählteFarbe = "grün";
+                } else if (RadioButtonGelb.isSelected()) {
+                    ausgewählteFarbe = "gelb";
+                } else if (RadioButtonLila.isSelected()) {
+                    ausgewählteFarbe = "lila";
+                } else if (RadioButtonMagenta.isSelected()) {
+                    ausgewählteFarbe = "magenta";
+                }
+
+                // Filtere den Warenkorb nach der ausgewählten Farbe
+                // Aufruf der Methode filtereNachFarbe
+                filtereNachFarbe(ausgewählteFarbe);
+            }
+        };
+
+        //Listener zu den RadioButtons hinzufügen
+        RadioButtonBlau.addActionListener(radioButtonListener);
+        RadioButtonRot.addActionListener(radioButtonListener);
+        RadioButtonGruen.addActionListener(radioButtonListener);
+        RadioButtonGelb.addActionListener(radioButtonListener);
+        RadioButtonLila.addActionListener(radioButtonListener);
+        RadioButtonMagenta.addActionListener(radioButtonListener);
+
+        filterZurücksetzenButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Leere die Textarea
+                textAreaWarenkorb.setText("");
+
+                // Zeige alle Bälle aus dem ursprünglichen Warenkorb
+                for (Ball ball : warenkorb) {
+                    textAreaWarenkorb.append(ball.toString() + "\n");
+                }
+
+                // Leere die gefilterte Liste, damit alle Bälle wieder angezeigt werden
+                gefilterteBaelle.clear();
+
+                // Setze die RadioButtons zurück
+                colorButtonGroup.clearSelection();
+
+            }
+        });
+
 
     }
 

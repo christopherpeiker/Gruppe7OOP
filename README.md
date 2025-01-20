@@ -13,6 +13,7 @@ Wir codierten eine Ball-Klasse, welche die entsprechenden Attribute enthielt und
 ermöglicht wurde. Anschließend entwickelten wir den BaelleKonfigurator, in welchem wir den Programmcode schrieben, der die Umsetzung der GUI-Oberfläche möglicht machte.
 Jeder Button bekam einen entsprechenden Action-Listener, sodass Benutzereingaben auf der GUI-Oberfläche berücksichtigt und gespeichert werden. 
 
+Nach einiger Zeit war unser Programmcode schließlich fertig und funktionierte ohne Probleme. 
 
 
 Probleme, die während des Projektes auftraten:
